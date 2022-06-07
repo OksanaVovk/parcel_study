@@ -117,7 +117,7 @@ function randerFilms(users) {
           <p class="info-item">
             <b>${genreArray.reduce((listGenre, genre) => {
               if (genre_ids.includes(genre.id)) {
-                listGenre.push(genre.name);
+                listGenre.push(` ${genre.name}`);
               }
               return listGenre;
             }, [])}</b>
