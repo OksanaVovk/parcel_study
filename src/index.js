@@ -105,9 +105,17 @@ function randerFilms(users) {
   console.log(genreArray);
   // console.log(genreFilms);
   return filmArray
-    .map(({ original_title, poster_path, original_name, genre_ids }) => {
-      console.log(`${original_title}`);
-      return `<div class="film-card">
+    .map(
+      ({
+        original_title,
+        poster_path,
+        original_name,
+        genre_ids,
+        release_date,
+        first_air_date,
+      }) => {
+        console.log(`${original_title}`);
+        return `<div class="film-card">
         <img src="https://image.tmdb.org/t/p/w500${poster_path}" alt="" loading="lazy" />
         <div class="info">
           <p class="film-name">${
@@ -121,15 +129,16 @@ function randerFilms(users) {
               }
               return listGenre;
             }, [])}</b>
-          </p>
-          <p class="info-item">
-            <b>Comments</b>
-          </p>
-          <p class="info-item">
-            <b>Downloads</b>
+            <b>||</b>
+            <b>${
+              release_date
+                ? release_date.slice(0, 4)
+                : first_air_date.slice(0, 4)
+            }</b>
           </p>
         </div>
       </div>`;
-    })
+      }
+    )
     .join('');
 }
