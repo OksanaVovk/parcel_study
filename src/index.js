@@ -15,6 +15,14 @@ async function fetchFilmsCards() {
   return users;
 }
 
+async function fetchFilmModal(movie_id) {
+  const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=024bf82d4805f650033dc69997860333&language=en-US`;
+  console.log(url);
+  const response = await fetch(url);
+  const movie = await response.json();
+  return movie;
+}
+
 // async function fetchgenre() {
 //   const response = await fetch(
 //     'https://api.themoviedb.org/3/genre/movie/list?api_key=024bf82d4805f650033dc69997860333&language=en-US'
@@ -80,30 +88,34 @@ btn.addEventListener(
       const users = await fetchFilmsCards();
       console.log(users);
       const markup = randerFilms(users);
-      filmsContainer.insertAdjacentHTML('beforebegin', markup);
+      filmsContainer.insertAdjacentHTML('afterbegin', markup);
     } catch (error) {
       console.log(error.message);
     }
   }
 );
 
+filmsContainer.addEventListener('click', onFilmClick);
+
+function onFilmClick(event) {
+  console.log(event.target);
+  console.log(event.currentTarget);
+  if (!event.target.dataset) {
+    return;
+  } else {
+    console.log(event.target.dataset.id);
+    fetchFilmModal(event.target.dataset.id)
+      .then(movie => console.log(movie))
+      .catch(error => console.log(error));
+  }
+}
+
 function randerFilms(users) {
   const filmArray = users[0].results;
   const genreArray = users[1].genres;
-
-  function list(array) {
-    genreArray.reduce((listGenre, genre) => {
-      console.log(genre.id);
-      if (array.includes(genre.id)) {
-        listGenre.push(genre.name);
-        return listGenre;
-      }
-    }, []);
-  }
-
   console.log(filmArray);
   console.log(genreArray);
-  // console.log(genreFilms);
+
   return filmArray
     .map(
       ({
@@ -113,10 +125,11 @@ function randerFilms(users) {
         genre_ids,
         release_date,
         first_air_date,
+        id,
       }) => {
-        console.log(`${original_title}`);
+        // console.log(`${original_title}`);
         return `<div class="film-card">
-        <img src="https://image.tmdb.org/t/p/w500${poster_path}" alt="" loading="lazy" />
+        <img src="https://image.tmdb.org/t/p/w500${poster_path}" alt="" loading="lazy"  data-id=${id} />
         <div class="info">
           <p class="film-name">${
             original_title ? original_title : original_name
@@ -129,7 +142,7 @@ function randerFilms(users) {
               }
               return listGenre;
             }, [])}</b>
-            <b>||</b>
+            <b>|</b>
             <b>${
               release_date
                 ? release_date.slice(0, 4)
