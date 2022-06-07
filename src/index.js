@@ -100,7 +100,7 @@ filmsContainer.addEventListener('click', onFilmClick);
 function onFilmClick(event) {
   console.log(event.target);
   console.log(event.currentTarget);
-  if (!event.target.dataset) {
+  if (!event.target.dataset.id) {
     return;
   } else {
     console.log(event.target.dataset.id);
