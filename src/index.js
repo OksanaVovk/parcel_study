@@ -1,7 +1,7 @@
 const KEY_API = '024bf82d4805f650033dc69997860333';
 async function fetchFilmsCards() {
   const festFetch =
-    'https://api.themoviedb.org/3/trending/all/day?api_key=024bf82d4805f650033dc69997860333';
+    'https://api.themoviedb.org/3/trending/movie/day?api_key=024bf82d4805f650033dc69997860333';
   const secondFetch =
     'https://api.themoviedb.org/3/genre/movie/list?api_key=024bf82d4805f650033dc69997860333&language=en-US';
   const dateIds = [festFetch, secondFetch];
@@ -159,9 +159,13 @@ function onFilmClick(event) {
     fetchFilmModal(event.target.dataset.id)
       .then(movie => {
         console.log(movie);
-        const markup = createFilmCard(movie);
-        backdropEl.classList.remove('is-hidden');
-        modalFilmInfoEl.insertAdjacentHTML('beforeend', markup);
+        if (!movie) {
+          return alert('The resource you requested could not be found.');
+        } else {
+          const markup = createFilmCard(movie);
+          backdropEl.classList.remove('is-hidden');
+          modalFilmInfoEl.insertAdjacentHTML('beforeend', markup);
+        }
       })
       .catch(error => console.log(error));
   }
