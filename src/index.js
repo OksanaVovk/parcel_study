@@ -1,103 +1,39 @@
+import NewApiSearchFilm from './NewApiSearchFilm';
+import NewApiPopularFilms from './NewApiPopularFilms';
 const KEY_API = '024bf82d4805f650033dc69997860333';
-async function fetchFilmsCards() {
-  const festFetch =
-    'https://api.themoviedb.org/3/trending/movie/day?api_key=024bf82d4805f650033dc69997860333';
-  const secondFetch =
-    'https://api.themoviedb.org/3/genre/movie/list?api_key=024bf82d4805f650033dc69997860333&language=en-US';
-  const dateIds = [festFetch, secondFetch];
-
-  const arrayOfPromises = dateIds.map(async userId => {
-    const response = await fetch(`${userId}`);
-    return response.json();
-  });
-
-  const dates = await Promise.all(arrayOfPromises);
-  return dates;
-}
 
 async function fetchFilmModal(movie_id) {
-  const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=024bf82d4805f650033dc69997860333&language=en-US`;
+  const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${KEY_API}`;
   console.log(url);
   const response = await fetch(url);
   const movie = await response.json();
   return movie;
 }
 
-// async function fetchgenre() {
-//   const response = await fetch(
-//     'https://api.themoviedb.org/3/genre/movie/list?api_key=024bf82d4805f650033dc69997860333&language=en-US'
-//   );
-//   const genresJson = await response.json();
-//   return genresJson;
-// }
-
-// let geners;
-
-// const doStuff = async () => {
-//   try {
-//     geners = await fetchgenre();
-//     console.log(geners);
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-// doStuff();
-
-// function fetchAllFilms() {
-//   return fetch(
-//     'https://api.themoviedb.org/3/trending/all/day?api_key=024bf82d4805f650033dc69997860333'
-//   ).then(response => {
-//     if (!response.ok) {
-//       throw new Error(response.status);
-//     }
-//     return response.json();
-//   });
-// }
-
-// function genreFilms() {
-//   return fetch(
-//     'https://api.themoviedb.org/3/genre/movie/list?api_key=024bf82d4805f650033dc69997860333&language=en-US'
-//   ).then(response => {
-//     if (!response.ok) {
-//       throw new Error(response.status);
-//     }
-//     return response.json();
-//   });
-// }
-
-// genreFilms()
-//   .then(genres => {
-//     console.log(genres);
-//   })
-//   .catch(error => console.log(error));
+const newApiSearchFilm = new NewApiSearchFilm();
+const newApiPopularFilms = new NewApiPopularFilms();
 
 const btn = document.querySelector('.button_all');
 const filmsContainer = document.querySelector('.films_all');
 const backdropEl = document.querySelector('.backdrop');
 const modalFilmInfoEl = document.querySelector('.modal_film-info');
 const btnModal = document.querySelector('.modal__button--close');
+const formEl = document.querySelector('.search-form');
 
-btn.addEventListener(
-  'click',
-  // () => {
-  //   fetchAllFilms()
-  //     .then(films => {
-  //       const markup = randerFilms(films);
-  //       filmsContainer.insertAdjacentHTML('beforebegin', markup);
-  //     })
-  //     .catch(error => console.log(error));
-  async () => {
-    try {
-      const dates = await fetchFilmsCards();
-      console.log(dates);
-      const markup = createFilmsList(dates);
-      filmsContainer.insertAdjacentHTML('afterbegin', markup);
-    } catch (error) {
-      console.log(error.message);
-    }
+btn.addEventListener('click', startPopularFilms);
+
+async function startPopularFilms() {
+  clearFilmsContainer();
+  newApiPopularFilms.resetPage();
+  try {
+    const dates = await newApiPopularFilms.fetchFilmsCards();
+    console.log(dates);
+    const markup = createFilmsList(dates);
+    filmsContainer.insertAdjacentHTML('afterbegin', markup);
+  } catch (error) {
+    console.log(error.message);
   }
-);
+}
 
 function createFilmsList(dates) {
   const filmArray = dates[0].results;
@@ -113,7 +49,6 @@ function createFilmsList(dates) {
         original_name,
         genre_ids,
         release_date,
-        first_air_date,
         id,
       }) => {
         // console.log(`${original_title}`);
@@ -132,11 +67,7 @@ function createFilmsList(dates) {
               return listGenre;
             }, [])}</b>
             <b>|</b>
-            <b>${
-              release_date
-                ? release_date.slice(0, 4)
-                : first_air_date.slice(0, 4)
-            }</b>
+            <b>${release_date ? release_date.slice(0, 4) : ''}</b>
           </p>
         </div>
       </div>`;
@@ -181,11 +112,12 @@ function createFilmCard(movie) {
     original_name,
     popularity,
     overview,
+    id,
   } = movie;
   console.log(genres);
 
   return `<div class="about_film-card">
-        <img src="https://image.tmdb.org/t/p/w500${poster_path}" class="about_film-img" alt="" loading="lazy"  />
+        <img src="https://image.tmdb.org/t/p/w500${poster_path}" class="about_film-img" alt="" loading="lazy" data-id=${id}  />
         <div class="about_film-info">
           <h1 class="about_film-name">${
             original_title ? original_title : original_name
@@ -218,6 +150,44 @@ function createFilmCard(movie) {
 }
 
 function onBtnModalClick() {
-  // filmsContainer.removeEventListener('click', onFilmClick);
   backdropEl.classList.add('is-hidden');
+}
+
+function clearFilmsContainer() {
+  filmsContainer.innerHTML = '';
+}
+
+formEl.addEventListener('submit', onSearchFilm);
+
+function onSearchFilm(event) {
+  event.preventDefault();
+  clearFilmsContainer();
+
+  newApiSearchFilm.query =
+    event.currentTarget.elements.searchQuery.value.trim();
+  console.log(newApiSearchFilm.searchQuery);
+  if (newApiSearchFilm.query === '') {
+    return alert('Please enter search data.');
+  }
+  newApiSearchFilm.resetPage();
+
+  newApiSearchFilm
+    .searchFilm()
+    .then(dates => {
+      console.log(dates);
+      const filmArray = dates[0].results;
+      const genreArray = dates[1].genres;
+      console.log(filmArray);
+      console.log(genreArray);
+
+      if (filmArray.length === 0) {
+        return alert(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      } else {
+        const markup = createFilmsList(dates);
+        filmsContainer.insertAdjacentHTML('afterbegin', markup);
+      }
+    })
+    .catch(error => console.log(error));
 }
