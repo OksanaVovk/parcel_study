@@ -1,4 +1,4 @@
-import NewApiSearchFilm from './NewApiSearchFilm';
+import NewApiSearchFilms from './NewApiSearchFilms';
 import NewApiPopularFilms from './NewApiPopularFilms';
 const KEY_API = '024bf82d4805f650033dc69997860333';
 
@@ -10,7 +10,7 @@ async function fetchFilmModal(movie_id) {
   return movie;
 }
 
-const newApiSearchFilm = new NewApiSearchFilm();
+const newApiSearchFilm = new NewApiSearchFilms();
 const newApiPopularFilms = new NewApiPopularFilms();
 
 const btn = document.querySelector('.button_all');
@@ -41,6 +41,16 @@ function createFilmsList(dates) {
   console.log(filmArray);
   console.log(genreArray);
 
+  // function genreLiist(genreArray, genre_ids) {
+  //   genreArray.reduce((listGenre, genre) => {
+  //     if (genre_ids.includes(genre.id)) {
+  //       listGenre.push(` ${genre.name}`);
+  //     }
+  //   }, []);
+  //   console.log(listGenre);
+  //   return listGenre.slice(0, 3);
+  // }
+
   return filmArray
     .map(
       ({
@@ -51,23 +61,25 @@ function createFilmsList(dates) {
         release_date,
         id,
       }) => {
-        // console.log(`${original_title}`);
         return `<div class="film-card">
-        <img src="https://image.tmdb.org/t/p/w500${poster_path}" alt="" loading="lazy"  data-id=${id} />
+        <img src="https://image.tmdb.org/t/p/w500${poster_path}"  alt="" loading="lazy" data-id=${id} />
         <div class="info">
           <p class="film-name">${
             original_title ? original_title : original_name
           }
           </p>
           <p class="info-item">
-            <b>${genreArray.reduce((listGenre, genre) => {
-              if (genre_ids.includes(genre.id)) {
-                listGenre.push(` ${genre.name}`);
-              }
-              return listGenre;
-            }, [])}</b>
+            <b>${genreArray
+              .reduce((listGenre, genre) => {
+                if (genre_ids.includes(genre.id)) {
+                  listGenre.push(` ${genre.name}`);
+                }
+                return listGenre;
+              }, [])
+              .slice(0, 2)
+              .concat([' Other'])} </b >
             <b>|</b>
-            <b>${release_date ? release_date.slice(0, 4) : ''}</b>
+            <b>${release_date ? release_date.slice(0, 4) : '-'}</b>
           </p>
         </div>
       </div>`;
@@ -117,7 +129,7 @@ function createFilmCard(movie) {
   console.log(genres);
 
   return `<div class="about_film-card">
-        <img src="https://image.tmdb.org/t/p/w500${poster_path}" class="about_film-img" alt="" loading="lazy" data-id=${id}  />
+         <img src="https://image.tmdb.org/t/p/w500${poster_path}" class="about_film-img" alt="" loading="lazy" data-id=${id} />
         <div class="about_film-info">
           <h1 class="about_film-name">${
             original_title ? original_title : original_name

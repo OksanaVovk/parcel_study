@@ -1,4 +1,4 @@
-export default class NewApiSearchFilm {
+export default class NewApiSearchFilms {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
