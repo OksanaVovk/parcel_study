@@ -34,4 +34,8 @@ export default class NewApiSearchFilms {
   incrementPage() {
     this.page += 1;
   }
+
+  setPage(newpage) {
+    this.page = newpage;
+  }
 }

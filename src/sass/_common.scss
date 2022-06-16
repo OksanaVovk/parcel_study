@@ -19,6 +19,11 @@ p{
     margin: 0;
 }
 
+ul,
+ol {
+    list-style: none;
+}
+
 img {
     display: block;
     max-width: 100%;
@@ -189,4 +194,28 @@ img {
 
  .text_error{
     color: red;
+ }
+
+ .pagination_list{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction:row 
+ }
+
+ .pagination_list li{
+    margin-right: 10px;
+    font-size: 20px;
+ }
+
+ .is-hidden {
+     position: absolute;
+     white-space: nowrap;
+     width: 1px;
+     height: 1px;
+     overflow: hidden;
+     border: 0;
+     padding: 0;
+     clip: rect(0 0 0 0);
+     clip-path: inset(50%);
+     margin: -1px;
  }

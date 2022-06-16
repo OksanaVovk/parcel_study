@@ -32,6 +32,9 @@ async function startPopularFilms() {
   try {
     const dates = await newApiPopularFilms.fetchFilmsCards();
     console.log(dates);
+    const count_pages = dates[0].total_pages;
+    console.log(count_pages);
+    createPagesList(count_pages);
     const markup = createFilmsList(dates);
     filmsContainer.insertAdjacentHTML('afterbegin', markup);
   } catch (error) {
@@ -248,4 +251,41 @@ function typed() {
     loopCount: 1,
   });
 }
-console.log(typed);
+
+const arrowleftEl = document.querySelector('.arrow_left');
+const paginationEl = document.querySelector('.pagination');
+const pagesArray = [];
+
+function createPagesList(count_pages) {
+  for (let i = 1; i <= count_pages; i += 1) {
+    if (count_pages === 1) {
+      return;
+    } else if (count_pages <= 20) {
+      pagesArray.push(`<li class="item_page" data-page="${i}">${i}</li>`);
+    } else {
+      count_pages = 20;
+      pagesArray.push(`<li class="item_page" data-page="${i}">${i}</li>`);
+    }
+  }
+  paginationEl.classList.remove('is-hidden');
+  return arrowleftEl.insertAdjacentHTML('afterend', pagesArray.join(''));
+}
+
+paginationEl.addEventListener('click', onPaginationClick);
+
+async function onPaginationClick(event) {
+  clearFilmsContainer();
+  console.dir(event.target.dataset.page);
+  console.dir(event.target);
+  event.target.style.color = 'orange';
+  newApiPopularFilms.setPage(event.target.dataset.page);
+  console.log(newApiPopularFilms.page);
+  try {
+    const dates = await newApiPopularFilms.fetchFilmsCards();
+    console.log(dates);
+    const markup = createFilmsList(dates);
+    filmsContainer.insertAdjacentHTML('afterbegin', markup);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
