@@ -4,6 +4,7 @@ import createFilmsList from './createFilmsList';
 import createFilmCard from './createFilmCard';
 import fetchFilmModal from './fetchFilmModal';
 const KEY_API = '024bf82d4805f650033dc69997860333';
+import Typed from 'typed.js';
 
 // async function fetchFilmModal(movie_id) {
 //   const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${KEY_API}`;
@@ -99,6 +100,8 @@ function onFilmClick(event) {
           queueBtn.setAttribute('data-id', `${movie.id}`);
           const markup = createFilmCard(movie);
           backdropEl.classList.remove('is-hidden');
+          backdropEl.addEventListener('click', onBackdropClick);
+          document.addEventListener('keydown', onEscKeyPress);
           document.body.classList.toggle('modal-open');
           modalFilmInfoEl.insertAdjacentHTML('beforeend', markup);
         }
@@ -173,7 +176,7 @@ function onSearchFilm(event) {
     event.currentTarget.elements.searchQuery.value.trim();
   console.log(newApiSearchFilm.searchQuery);
   if (newApiSearchFilm.query === '') {
-    return alert('Please enter search data.');
+    typed();
   }
   newApiSearchFilm.resetPage();
 
@@ -216,3 +219,33 @@ function onAddBtnClick(event) {
     localStorage.setItem(ADDTOWATCHED_KEY, JSON.stringify(moviesId));
   }
 }
+
+function onBackdropClick() {
+  backdropEl.classList.add('is-hidden');
+  document.body.classList.toggle('modal-open');
+  backdropEl.removeEventListener('click', onBackdropClick);
+}
+
+function onEscKeyPress(event) {
+  if (event.code === 'Escape') {
+    backdropEl.classList.add('is-hidden');
+    document.body.classList.toggle('modal-open');
+    document.removeEventListener('keydown', onEscKeyPress);
+  }
+}
+
+function typed() {
+  return new Typed('.text_error', {
+    strings: [
+      'Search result not successful. Enter the correct movie name and ',
+      ' ',
+    ],
+    typeSpeed: 20,
+    backSpeed: 20,
+    backDelay: 2000,
+    showCursor: false,
+    loop: true,
+    loopCount: 1,
+  });
+}
+console.log(typed);
