@@ -6,14 +6,6 @@ import fetchFilmModal from './fetchFilmModal';
 const KEY_API = '024bf82d4805f650033dc69997860333';
 import Typed from 'typed.js';
 
-// async function fetchFilmModal(movie_id) {
-//   const url = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${KEY_API}`;
-//   console.log(url);
-//   const response = await fetch(url);
-//   const movie = await response.json();
-//   return movie;
-// }
-
 const newApiSearchFilm = new NewApiSearchFilms();
 const newApiPopularFilms = new NewApiPopularFilms();
 
@@ -23,6 +15,7 @@ const backdropEl = document.querySelector('.backdrop');
 const modalFilmInfoEl = document.querySelector('.modal_film-info');
 const btnModal = document.querySelector('.modal__button--close');
 const formEl = document.querySelector('.search-form');
+const paginationEl = document.querySelector('.pagination');
 
 btn.addEventListener('click', startPopularFilms);
 
@@ -34,53 +27,16 @@ async function startPopularFilms() {
     console.log(dates);
     const count_pages = dates[0].total_pages;
     console.log(count_pages);
-    createPagesList(count_pages);
+    const markupPages = createPagesList(count_pages);
+    paginationEl.innerHTML = markupPages;
+    paginationEl.firstChild.disabled = true;
+    paginationEl.children[newApiPopularFilms.page].style.color = 'orangered';
     const markup = createFilmsList(dates);
     filmsContainer.insertAdjacentHTML('afterbegin', markup);
   } catch (error) {
     console.log(error.message);
   }
 }
-
-// function createFilmsList(dates) {
-//   const filmArray = dates[0].results;
-//   const genreArray = dates[1].genres;
-//   return filmArray
-//     .map(
-//       ({
-//         original_title,
-//         poster_path,
-//         original_name,
-//         genre_ids,
-//         release_date,
-//         id,
-//       }) => {
-//         return `<div class="film-card">
-//         <img src="https://image.tmdb.org/t/p/w500${poster_path}"  alt="" loading="lazy" data-id=${id} />
-//         <div class="info">
-//           <p class="film-name">${
-//             original_title ? original_title : original_name
-//           }
-//           </p>
-//           <p class="info-item">
-//             <b>${genreArray
-//               .reduce((listGenre, genre) => {
-//                 if (genre_ids.includes(genre.id)) {
-//                   listGenre.push(` ${genre.name}`);
-//                 }
-//                 return listGenre;
-//               }, [])
-//               .slice(0, 2)
-//               .concat([' Other'])} </b >
-//             <b>|</b>
-//             <b>${release_date ? release_date.slice(0, 4) : '-'}</b>
-//           </p>
-//         </div>
-//       </div>`;
-//       }
-//     )
-//     .join('');
-// }
 
 filmsContainer.addEventListener('click', onFilmClick);
 btnModal.addEventListener('click', onBtnModalClick);
@@ -112,53 +68,6 @@ function onFilmClick(event) {
       .catch(error => console.log(error));
   }
 }
-
-// function createFilmCard(movie) {
-//   const {
-//     vote_average,
-//     vote_count,
-//     genres,
-//     original_title,
-//     poster_path,
-//     original_name,
-//     popularity,
-//     overview,
-//     id,
-//   } = movie;
-//   console.log(genres);
-
-//   return `<div class="about_film-card">
-//          <img src="https://image.tmdb.org/t/p/w500${poster_path}" class="about_film-img" alt="" loading="lazy" data-id=${id} />
-//         <div class="about_film-info">
-//           <h1 class="about_film-name">${
-//             original_title ? original_title : original_name
-//           }
-//           </h1>
-//           <div class="about_film-item">
-//           <p class="about_film-text">Vote / Votes</p>
-//           <b class="about_film-date">${vote_average} / ${vote_count}</b>
-//           </div>
-//           <div class="about_film-item">
-//           <p class="about_film-text">Popularity</p>
-//           <b class="about_film-date">${popularity}</b>
-//           </div>
-//           <div class="about_film-item">
-//           <p class="about_film-text">Original Title</p>
-//           <b class="about_film-date">${
-//             original_title ? original_title : original_name
-//           }</b>
-//           </div>
-//           <div class="about_film-item">
-//           <p class="about_film-text">Genre</p>
-//           <b class="about_film-date">${
-//             genres ? genres.map(genre => genre.name) : ' '
-//           }</b>
-//           </div>
-//           <h2 class="about_film-pretitle">ABOUT</h2>
-//           <p class="about_film-overview">${overview}</p>
-//         </div>
-//       </div>`;
-// }
 
 function onBtnModalClick() {
   backdropEl.classList.add('is-hidden');
@@ -252,39 +161,70 @@ function typed() {
   });
 }
 
-const arrowleftEl = document.querySelector('.arrow_left');
-const paginationEl = document.querySelector('.pagination');
-const pagesArray = [];
-
 function createPagesList(count_pages) {
+  const pagesArray = [];
   for (let i = 1; i <= count_pages; i += 1) {
     if (count_pages === 1) {
       return;
-    } else if (count_pages <= 20) {
-      pagesArray.push(`<li class="item_page" data-page="${i}">${i}</li>`);
+    } else if (count_pages <= 10) {
+      pagesArray.push(
+        `<button type="button" class="btn_page" data-page="${i}">${i}</button>`
+      );
     } else {
-      count_pages = 20;
-      pagesArray.push(`<li class="item_page" data-page="${i}">${i}</li>`);
+      count_pages = 10;
+      pagesArray.push(
+        `<button type="button" class="btn_page" data-page="${i}">${i}</button>`
+      );
     }
   }
-  paginationEl.classList.remove('is-hidden');
-  return arrowleftEl.insertAdjacentHTML('afterend', pagesArray.join(''));
+  pagesArray.unshift(
+    `<button type="button" class="arrow_left" data-page="arrow_left">&#129044;</button>`
+  );
+  pagesArray.push(
+    ` <button type="button" class="arrow_right" data-page="arrow_right">&#129046;</button>`
+  );
+  return pagesArray.join('');
 }
 
 paginationEl.addEventListener('click', onPaginationClick);
 
 async function onPaginationClick(event) {
   clearFilmsContainer();
-  console.dir(event.target.dataset.page);
+  const currentPage = event.target.dataset.page;
+  console.dir(currentPage);
   console.dir(event.target);
-  event.target.style.color = 'orange';
-  newApiPopularFilms.setPage(event.target.dataset.page);
+
+  if (currentPage === 'arrow_left') {
+    newApiPopularFilms.decrementPage();
+  } else if (currentPage === 'arrow_right') {
+    newApiPopularFilms.incrementPage();
+  } else {
+    newApiPopularFilms.setPage(currentPage);
+  }
+
+  if (newApiPopularFilms.page <= 1) {
+    newApiPopularFilms.setPage(1);
+    paginationEl.firstChild.disabled = true;
+    paginationEl.lastChild.disabled = false;
+  } else if (newApiPopularFilms.page >= paginationEl.children.length - 2) {
+    newApiPopularFilms.setPage(paginationEl.children.length - 2);
+    paginationEl.lastChild.disabled = true;
+    paginationEl.firstChild.disabled = false;
+  } else {
+    paginationEl.firstChild.disabled = false;
+    paginationEl.lastChild.disabled = false;
+  }
+
   console.log(newApiPopularFilms.page);
   try {
     const dates = await newApiPopularFilms.fetchFilmsCards();
     console.log(dates);
     const markup = createFilmsList(dates);
-    filmsContainer.insertAdjacentHTML('afterbegin', markup);
+    filmsContainer.insertAdjacentHTML('beforeend', markup);
+    for (let i = 0; i < paginationEl.children.length; i += 1) {
+      paginationEl.children[i].style.color = 'black';
+    }
+    paginationEl.children[dates[0].page].style.color = 'orangered';
   } catch (error) {
     console.log(error.message);
   }

@@ -196,16 +196,13 @@ img {
     color: red;
  }
 
- .pagination_list{
+ .pagination{
     display: flex;
     flex-wrap: wrap;
     flex-direction:row 
  }
 
- .pagination_list li{
-    margin-right: 10px;
-    font-size: 20px;
- }
+
 
  .is-hidden {
      position: absolute;
@@ -219,3 +216,14 @@ img {
      clip-path: inset(50%);
      margin: -1px;
  }
+
+ .current_page{
+    color: orangered;
+ }
+ .pagination button{
+    display: inline-block;
+    margin-right: 20px;
+    font-size: 20px;
+    border: none;
+ }
+
