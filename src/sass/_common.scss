@@ -198,8 +198,10 @@ img {
 
  .pagination{
     display: flex;
-    flex-wrap: wrap;
-    flex-direction:row 
+    justify-content: center;
+    align-items: center;
+    
+    height: 40px;
  }
 
 
@@ -220,10 +222,32 @@ img {
  .current_page{
     color: orangered;
  }
- .pagination button{
-    display: inline-block;
-    margin-right: 20px;
-    font-size: 20px;
+
+ .btn_page{
+    height: 40px;
+    width: 40px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.33;
+    background: none;
     border: none;
  }
+
+ .arrow_left,
+ .arrow_right{
+    font-weight: 500;
+        width: 40px;
+        height: 40px;
+        background: #F7F7F7;
+        border-radius: 5px;
+        border: none;
+}
+
+.active {
+    background: orange;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+
+}
 

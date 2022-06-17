@@ -29,8 +29,9 @@ async function startPopularFilms() {
     console.log(count_pages);
     const markupPages = createPagesList(count_pages);
     paginationEl.innerHTML = markupPages;
-    paginationEl.firstChild.disabled = true;
-    paginationEl.children[newApiPopularFilms.page].style.color = 'orangered';
+    // paginationEl.firstChild.disabled = true;
+    paginationEl.firstChild.classList.add('is-hidden');
+    paginationEl.children[newApiPopularFilms.page].classList.add('active');
     const markup = createFilmsList(dates);
     filmsContainer.insertAdjacentHTML('afterbegin', markup);
   } catch (error) {
@@ -204,15 +205,15 @@ async function onPaginationClick(event) {
 
   if (newApiPopularFilms.page <= 1) {
     newApiPopularFilms.setPage(1);
-    paginationEl.firstChild.disabled = true;
-    paginationEl.lastChild.disabled = false;
+    paginationEl.firstChild.classList.add('is-hidden');
+    paginationEl.lastChild.classList.remove('is-hidden');
   } else if (newApiPopularFilms.page >= paginationEl.children.length - 2) {
     newApiPopularFilms.setPage(paginationEl.children.length - 2);
-    paginationEl.lastChild.disabled = true;
-    paginationEl.firstChild.disabled = false;
+    paginationEl.firstChild.classList.remove('is-hidden');
+    paginationEl.lastChild.classList.add('is-hidden');
   } else {
-    paginationEl.firstChild.disabled = false;
-    paginationEl.lastChild.disabled = false;
+    paginationEl.firstChild.classList.remove('is-hidden');
+    paginationEl.lastChild.classList.remove('is-hidden');
   }
 
   console.log(newApiPopularFilms.page);
@@ -222,9 +223,9 @@ async function onPaginationClick(event) {
     const markup = createFilmsList(dates);
     filmsContainer.insertAdjacentHTML('beforeend', markup);
     for (let i = 0; i < paginationEl.children.length; i += 1) {
-      paginationEl.children[i].style.color = 'black';
+      paginationEl.children[i].classList.remove('active');
     }
-    paginationEl.children[dates[0].page].style.color = 'orangered';
+    paginationEl.children[dates[0].page].classList.add('active');
   } catch (error) {
     console.log(error.message);
   }
