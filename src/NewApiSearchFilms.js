@@ -4,7 +4,7 @@ export default class NewApiSearchFilms {
     this.page = 1;
   }
 
-  async searchFilm() {
+  async fetchFilms() {
     const KEY_API = '024bf82d4805f650033dc69997860333';
     const festFetch = `https://api.themoviedb.org/3/search/movie?api_key=${KEY_API}&language=en-US&page=1&include_adult=false&query=${this.searchQuery}&page=${this.page}`;
     const secondFetch = `https://api.themoviedb.org/3/genre/movie/list?api_key=${KEY_API}&language=en-US`;
@@ -33,6 +33,10 @@ export default class NewApiSearchFilms {
 
   incrementPage() {
     this.page += 1;
+  }
+
+  decrementPage() {
+    this.page -= 1;
   }
 
   setPage(newpage) {

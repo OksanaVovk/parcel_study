@@ -23,13 +23,12 @@ async function startPopularFilms() {
   clearFilmsContainer();
   newApiPopularFilms.resetPage();
   try {
-    const dates = await newApiPopularFilms.fetchFilmsCards();
+    const dates = await newApiPopularFilms.fetchFilms();
     console.log(dates);
     const count_pages = dates[0].total_pages;
     console.log(count_pages);
     const markupPages = createPagesList(count_pages);
     paginationEl.innerHTML = markupPages;
-    // paginationEl.firstChild.disabled = true;
     paginationEl.firstChild.classList.add('is-hidden');
     paginationEl.children[newApiPopularFilms.page].classList.add('active');
     const markup = createFilmsList(dates);
@@ -37,6 +36,8 @@ async function startPopularFilms() {
   } catch (error) {
     console.log(error.message);
   }
+  paginationEl.removeEventListener('click', onPaginationClickSearch);
+  paginationEl.addEventListener('click', onPaginationClickPopul);
 }
 
 filmsContainer.addEventListener('click', onFilmClick);
@@ -94,7 +95,7 @@ function onSearchFilm(event) {
   newApiSearchFilm.resetPage();
 
   newApiSearchFilm
-    .searchFilm()
+    .fetchFilms()
     .then(dates => {
       console.log(dates);
       const filmArray = dates[0].results;
@@ -109,9 +110,17 @@ function onSearchFilm(event) {
       } else {
         const markup = createFilmsList(dates);
         filmsContainer.insertAdjacentHTML('afterbegin', markup);
+        const count_pages = dates[0].total_pages;
+        console.log(count_pages);
+        const markupPages = createPagesList(count_pages);
+        paginationEl.innerHTML = markupPages;
+        paginationEl.firstChild.classList.add('is-hidden');
+        paginationEl.children[newApiSearchFilm.page].classList.add('active');
       }
     })
     .catch(error => console.log(error));
+  paginationEl.removeEventListener('click', onPaginationClickPopul);
+  paginationEl.addEventListener('click', onPaginationClickSearch);
 }
 
 const ADDTOWATCHED_KEY = 'add-to-watchet-id';
@@ -166,7 +175,7 @@ function createPagesList(count_pages) {
   const pagesArray = [];
   for (let i = 1; i <= count_pages; i += 1) {
     if (count_pages === 1) {
-      return;
+      pagesArray = [];
     } else if (count_pages <= 10) {
       pagesArray.push(
         `<button type="button" class="btn_page" data-page="${i}">${i}</button>`
@@ -187,9 +196,7 @@ function createPagesList(count_pages) {
   return pagesArray.join('');
 }
 
-paginationEl.addEventListener('click', onPaginationClick);
-
-async function onPaginationClick(event) {
+async function onPaginationClickPopul(event) {
   clearFilmsContainer();
   const currentPage = event.target.dataset.page;
   console.dir(currentPage);
@@ -218,7 +225,7 @@ async function onPaginationClick(event) {
 
   console.log(newApiPopularFilms.page);
   try {
-    const dates = await newApiPopularFilms.fetchFilmsCards();
+    const dates = await newApiPopularFilms.fetchFilms();
     console.log(dates);
     const markup = createFilmsList(dates);
     filmsContainer.insertAdjacentHTML('beforeend', markup);
@@ -230,3 +237,87 @@ async function onPaginationClick(event) {
     console.log(error.message);
   }
 }
+
+async function onPaginationClickSearch(event) {
+  clearFilmsContainer();
+  const currentPage = event.target.dataset.page;
+  console.dir(currentPage);
+  console.dir(event.target);
+
+  if (currentPage === 'arrow_left') {
+    newApiSearchFilm.decrementPage();
+  } else if (currentPage === 'arrow_right') {
+    newApiSearchFilm.incrementPage();
+  } else {
+    newApiSearchFilm.setPage(currentPage);
+  }
+
+  if (newApiSearchFilm.page <= 1) {
+    newApiSearchFilm.setPage(1);
+    paginationEl.firstChild.classList.add('is-hidden');
+    paginationEl.lastChild.classList.remove('is-hidden');
+  } else if (newApiSearchFilm.page >= paginationEl.children.length - 2) {
+    newApiSearchFilm.setPage(paginationEl.children.length - 2);
+    paginationEl.firstChild.classList.remove('is-hidden');
+    paginationEl.lastChild.classList.add('is-hidden');
+  } else {
+    paginationEl.firstChild.classList.remove('is-hidden');
+    paginationEl.lastChild.classList.remove('is-hidden');
+  }
+
+  console.log(newApiSearchFilm.page);
+  try {
+    const dates = await newApiSearchFilm.fetchFilms();
+    console.log(dates);
+    const markup = createFilmsList(dates);
+    filmsContainer.insertAdjacentHTML('beforeend', markup);
+    for (let i = 0; i < paginationEl.children.length; i += 1) {
+      paginationEl.children[i].classList.remove('active');
+    }
+    paginationEl.children[dates[0].page].classList.add('active');
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// async function onPaginationClick(event, object) {
+//   clearFilmsContainer();
+//   const currentPage = event.target.dataset.page;
+//   console.dir(currentPage);
+//   console.dir(event.target);
+
+//   if (currentPage === 'arrow_left') {
+//     object.decrementPage();
+//   } else if (currentPage === 'arrow_right') {
+//     object.incrementPage();
+//   } else {
+//     object.setPage(currentPage);
+//   }
+
+//   if (object.page <= 1) {
+//     object.setPage(1);
+//     paginationEl.firstChild.classList.add('is-hidden');
+//     paginationEl.lastChild.classList.remove('is-hidden');
+//   } else if (object.page >= paginationEl.children.length - 2) {
+//     object.setPage(paginationEl.children.length - 2);
+//     paginationEl.firstChild.classList.remove('is-hidden');
+//     paginationEl.lastChild.classList.add('is-hidden');
+//   } else {
+//     paginationEl.firstChild.classList.remove('is-hidden');
+//     paginationEl.lastChild.classList.remove('is-hidden');
+//   }
+
+//   console.log(newApiSearchFilm.page);
+//   try {
+//     const dates = await object.fetchFilms();
+//     console.log(dates);
+//     const markup = createFilmsList(dates);
+//     filmsContainer.insertAdjacentHTML('beforeend', markup);
+//     for (let i = 0; i < paginationEl.children.length; i += 1) {
+//       paginationEl.children[i].classList.remove('active');
+//     }
+//     paginationEl.children[dates[0].page].classList.add('active');
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
