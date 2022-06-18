@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page title</title>
+    <title class="lng-title">Page title</title>
     <link rel="stylesheet" href="./sass/index.scss" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,19 +12,26 @@
     <script type="module" src="./index.js"></script>
   </head>
   <body>
+    <p class="lng-hello">Hello world</p>
+    <p class="lng-discription">Movie search</p>
+    <select class="lang">
+      <option value='en'>en</option>
+      <option value='ua'>ua</option>
+    </select>
+
     <form class="search-form" id="search-form">
       <input class="form_input" type="text" name="searchQuery" autocomplete="off" placeholder="Search images..." />
-      <button class="submit" type="submit">Search</button>
+      <button class="lng-search submit" type="submit">Search</button>
     </form>
     <p class="text_error"></p>
-    <button class="button_all">All</button>
+    <button class="lng-all button_all">All</button>
     <div class="films_all"></div>
     <div class="backdrop is-hidden" data-modal>
     <div class="modal_window">
     <button type="button" class="modal__button--close">&times</button>
     <div class="modal_film-info"></div>
-    <button type="button" class="modal__button--watched">Add to watched</button>
-    <button type="button" class="modal__button--queue">Queue</button>
+    <button type="button" class="lng-add modal__button--watched">Add to watched</button>
+    <button type="button" class="lng-queue modal__button--queue">Queue</button>
     </div>
     </div>
     <div class="pagination"></div>

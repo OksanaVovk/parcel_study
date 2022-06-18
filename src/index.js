@@ -5,6 +5,10 @@ import createFilmCard from './createFilmCard';
 import fetchFilmModal from './fetchFilmModal';
 const KEY_API = '024bf82d4805f650033dc69997860333';
 import Typed from 'typed.js';
+import './language';
+import { changeLanguage } from './language';
+import { chooseLanguageApi } from './language';
+import { genreLang } from './genre';
 
 const newApiSearchFilm = new NewApiSearchFilms();
 const newApiPopularFilms = new NewApiPopularFilms();
@@ -22,8 +26,9 @@ btn.addEventListener('click', startPopularFilms);
 async function startPopularFilms() {
   clearFilmsContainer();
   newApiPopularFilms.resetPage();
+  const currentLanguage = chooseLanguageApi();
   try {
-    const dates = await newApiPopularFilms.fetchFilms();
+    const dates = await newApiPopularFilms.fetchFilms(currentLanguage);
     console.log(dates);
     const count_pages = dates[0].total_pages;
     console.log(count_pages);
@@ -41,9 +46,9 @@ async function startPopularFilms() {
 }
 
 filmsContainer.addEventListener('click', onFilmClick);
-btnModal.addEventListener('click', onBtnModalClick);
 
 function onFilmClick(event) {
+  btnModal.addEventListener('click', onBtnModalClick);
   modalFilmInfoEl.innerHTML = '';
   console.log(event.target);
   console.log(event.currentTarget);
@@ -51,7 +56,8 @@ function onFilmClick(event) {
     return;
   } else {
     console.log(event.target.dataset.id);
-    fetchFilmModal(event.target.dataset.id)
+    const currentLanguage = chooseLanguageApi();
+    fetchFilmModal(event.target.dataset.id, currentLanguage)
       .then(movie => {
         console.log(movie);
         if (!movie) {
@@ -65,7 +71,9 @@ function onFilmClick(event) {
           document.addEventListener('keydown', onEscKeyPress);
           document.body.classList.toggle('modal-open');
           modalFilmInfoEl.insertAdjacentHTML('beforeend', markup);
+          changeLanguage();
         }
+        btnModal.removeEventListener('click', onBtnModalClick);
       })
       .catch(error => console.log(error));
   }
@@ -93,9 +101,10 @@ function onSearchFilm(event) {
     typed();
   }
   newApiSearchFilm.resetPage();
+  const currentLanguage = chooseLanguageApi();
 
   newApiSearchFilm
-    .fetchFilms()
+    .fetchFilms(currentLanguage)
     .then(dates => {
       console.log(dates);
       const filmArray = dates[0].results;
@@ -175,7 +184,7 @@ function createPagesList(count_pages) {
   const pagesArray = [];
   for (let i = 1; i <= count_pages; i += 1) {
     if (count_pages === 1) {
-      pagesArray = [];
+      return '';
     } else if (count_pages <= 10) {
       pagesArray.push(
         `<button type="button" class="btn_page" data-page="${i}">${i}</button>`
@@ -321,3 +330,16 @@ async function onPaginationClickSearch(event) {
 //     console.log(error.message);
 //   }
 // }
+
+// async function fetchFilmLang() {
+//   const KEY_API = '024bf82d4805f650033dc69997860333';
+//   const url = `https://api.themoviedb.org/3/configuration/languages?api_key=${KEY_API}`;
+//   console.log(url);
+//   const response = await fetch(url);
+//   const data = await response.json();
+//   return data;
+// }
+
+// fetchFilmLang().then(data => {
+//   console.log(data);
+// });
